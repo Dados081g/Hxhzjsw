@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><title>Крути номер</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#05060f;--card:rgba(20,22,52,.6);--tx:#eef0ff;--mut:#9199c9;--ac:#7c8cff;--bd:rgba(150,160,255,.22);--glow:rgba(124,140,255,.4)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--tx);font-family:-apple-system,"Segoe UI",Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 12% 8%,rgba(124,58,237,.38),transparent 70%),radial-gradient(ellipse 55% 45% at 92% 38%,rgba(14,165,233,.22),transparent 70%),radial-gradient(ellipse 75% 40% at 30% 102%,rgba(236,72,153,.22),transparent 70%)}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+button,select,input{font-family:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid #a5b0ff;outline-offset:2px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(5,6,15,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--bd)}
+.bur{font-size:22px;background:var(--card);border:1px solid var(--bd);border-radius:12px;width:42px;height:42px;color:var(--tx)}
+.bal{flex:1;text-align:right}.bal small{color:var(--mut);display:block;font-size:12px}.bal b{font-size:22px;color:#ffe08a;text-shadow:0 0 14px rgba(255,205,90,.45)}
+.ov{position:fixed;inset:0;background:rgba(2,3,10,.65);z-index:9;display:none}.ov.on{display:block}
+.dr{position:fixed;top:0;left:0;bottom:0;width:260px;background:rgba(10,12,32,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:10;transform:translateX(-105%);transition:transform .22s;padding:calc(env(safe-area-inset-top,0px) + 18px) 12px 12px;border-right:1px solid var(--bd)}
+.dr.on{transform:none}.dr h2{margin:0 8px 16px;font-size:18px}
+.dr button{display:block;width:100%;text-align:left;padding:14px;margin-bottom:10px;border:1px solid var(--bd);background:rgba(255,255,255,.05);color:var(--tx);font-size:16px;font-weight:600;border-radius:14px}
+.dr button.on{background:linear-gradient(135deg,#7c8cff,#a855f7);border-color:transparent;box-shadow:0 0 20px var(--glow)}
+.w{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:16px}.pg{display:none}.pg.on{display:block}
+.num{margin:6px 0 16px;background:linear-gradient(180deg,rgba(30,34,84,.65),rgba(14,16,40,.7));border:1px solid rgba(165,176,255,.35);border-radius:22px;padding:30px 8px;text-align:center;font-size:28px;font-weight:700;letter-spacing:.03em;font-variant-numeric:tabular-nums;text-shadow:0 0 18px var(--glow);box-shadow:0 0 44px rgba(124,140,255,.2),inset 0 0 30px rgba(124,140,255,.08);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.tier{margin-top:10px;font-size:15px;font-weight:600;min-height:22px;letter-spacing:0;text-shadow:none}
+.x{display:flex;gap:10px;padding:6px 2px}.x button{flex:1;padding:12px 2px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3);color:#fff;font-weight:800;font-size:17px;transition:transform .15s,filter .15s,box-shadow .15s;text-shadow:0 1px 3px rgba(0,0,0,.45);filter:saturate(.55) brightness(.7)}
+.x button.on{transform:scale(1.07);filter:none;box-shadow:0 0 26px rgba(255,255,255,.28)}
+.x button i{display:block;font-style:normal;font-size:34px;line-height:1.15}
+.x button small{display:block;font-weight:600;font-size:11px;margin-top:2px}
+.desc{margin:12px 0;text-align:center;font-weight:600;font-size:14px}
+.go{width:100%;padding:18px;border:1px solid rgba(255,255,255,.4);border-radius:22px;color:#fff;font-size:21px;font-weight:800;text-shadow:0 2px 4px rgba(0,0,0,.4);box-shadow:0 0 30px var(--glow),0 8px 20px rgba(0,0,0,.35);transition:transform .1s}
+.go:active{transform:scale(.98)}.go:disabled{opacity:.45;filter:grayscale(.6);box-shadow:none}
+.row{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;padding:12px;border-radius:14px;border:1px solid var(--bd);background:rgba(255,255,255,.07);color:var(--tx);font-weight:700;font-size:14px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.btn:active{transform:scale(.97)}.btn.p{background:linear-gradient(135deg,#7c8cff,#a855f7);border-color:transparent;box-shadow:0 0 18px var(--glow)}.btn:disabled{opacity:.4}
+h3{margin:22px 0 8px;font-size:14px;color:var(--mut);letter-spacing:.04em}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:12px;margin-bottom:8px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.c .l{display:flex;justify-content:space-between;align-items:center;gap:8px}.c small{color:var(--mut)}
+.c input,.c select{width:100%;margin:6px 0 10px;padding:11px;border-radius:12px;border:1px solid var(--bd);background:rgba(5,6,20,.7);color:var(--tx);font-size:15px}
+.c select{margin-top:8px}.c input::placeholder{color:#5f679a}
+.tag{font-size:12px;font-weight:700}.em{color:var(--mut);text-align:center;padding:14px;font-size:14px}
+.reset{margin-top:18px;background:none;border:0;color:var(--mut);width:100%;font-size:13px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><canvas id="sky"></canvas>
+<div class="top"><button class="bur" id="bur">☰</button><div class="bal"><small>Баланс</small><b id="bal"></b></div></div>
+<div class="ov" id="ov"></div>
+<div class="dr" id="dr"><h2>📱 Номера</h2>
+<button data-p="spin">🎰 Крутить</button><button data-p="nums">💎 Мои номера</button><button data-p="phones">📱 Телефоны и SIM</button><button data-p="admin" id="adm" style="display:none">🛠 Админ</button></div>
+
+<div class="w">
+<div class="pg on" id="p-spin">
+ <div class="num" id="num">+7 9•• ••• •• ••<div class="tier" id="tier"></div></div>
+ <div class="row" id="pend" style="display:none"></div>
+ <div class="x" id="x" style="margin-top:14px"></div>
+ <div class="desc" id="desc"></div>
+ <button class="go" id="go"></button>
+ <button class="btn" id="bonus" style="width:100%;margin-top:16px"></button>
+ <h3>История</h3><div id="hist"></div>
+ <button class="reset" id="reset">Сбросить всё (баланс 100 000)</button>
+</div>
+<div class="pg" id="p-admin"><h3>АДМИН-ПАНЕЛЬ</h3>
+ <div class="c"><small>Telegram ID получателя (пусто = я сам)</small><input id="a-to" inputmode="numeric" placeholder="мой ID">
+ <small>Сумма</small><input id="a-amt" type="number" placeholder="1000000"><button class="btn p" id="a-bal" style="width:100%">💰 Выдать баланс</button></div>
+ <div class="c"><small>Номер: 10 цифр, например 9001234567</small><input id="a-num" inputmode="numeric" maxlength="10">
+ <small>Цена номера</small><input id="a-val" type="number" placeholder="50000"><button class="btn p" id="a-giv" style="width:100%">📞 Выдать номер</button></div>
+ <div class="c"><b>Уникальные номера</b><div id="a-uni"></div></div><div id="a-msg" class="em"></div></div>
+<div class="pg" id="p-nums"><h3>СОХРАНЁННЫЕ НОМЕРА</h3><div id="nl"></div></div>
+<div class="pg" id="p-phones"><h3>МОИ ТЕЛЕФОНЫ</h3><div id="my"></div><h3>МАГАЗИН</h3><div id="shop"></div></div>
+</div>
+
+<script>
+var START=100000,RATE=0.04,HOUR=3600000;
+var MODES={1:{cost:1000,w:[80,15,4,.9,0,0,.1,0,0],n:"Обычный",e:"🍀",c:"#2a8cff",g:"linear-gradient(#6fb8ff,#2a8cff)",t:"Обычный · падают обычные номера, редко — дорогие"},
+ 5:{cost:30000,w:[0,0,0,70,25,5,2,0,0],n:"Мифический",e:"🔮",c:"#a855f7",g:"linear-gradient(#cf9bff,#9333ea)",t:"Мифический · падают эпические номера"},
+ 10:{cost:110000,w:[0,0,0,0,0,0,70,27,3,.05,.05],n:"Легендарный",e:"👑",c:"#f59e0b",g:"linear-gradient(#ffe27a,#f59e0b)",t:"Легендарный · падают легендарные номера"}};
+var P="#a855f7",G="#f59e0b";
+var TIERS=[{n:"Обычный",c:"#8a92a6",v:200},{n:"Хороший хвост",c:"#2fb344",v:1000},{n:"Редкий · пары",c:"#2a8cff",v:4000},
+ {n:"Эпический · 4 подряд",c:P,v:20000},{n:"Эпический ✦ · 5 подряд",c:P,v:35000},{n:"Эпический ✦✦ · 6 подряд",c:P,v:60000},
+ {n:"Легендарный · 7 подряд",c:G,v:90000},{n:"Легендарный ✦ · 8 подряд",c:G,v:120000},{n:"ЛЕГЕНДАРНЫЙ 💎 · 9 подряд",c:G,v:400000},
+ {n:"💠 УНИКАЛЬНЫЙ · +7 777 777 77 77",c:"#06b6d4",v:5000000},{n:"💠 УНИКАЛЬНЫЙ · +7 000 000 00 00",c:"#06b6d4",v:3000000}];
+var PHONES=[{id:"b",n:"Кнопочный",e:"📞",p:20000,m:1},{id:"s",n:"Смартфон",e:"📱",p:60000,m:2},{id:"f",n:"Флагман",e:"📲",p:200000,m:4}];
+var tk=0,S={bal:START,nums:[],phones:[],hist:[]},mult=1,busy=false,pend=null,page="spin";
+try{var raw=JSON.parse(localStorage.getItem("numapp2")||"null");if(raw)S=raw}catch(e){}
+try{window.Telegram&&Telegram.WebApp&&(Telegram.WebApp.ready(),Telegram.WebApp.expand(),Telegram.WebApp.setHeaderColor("#05060f"),Telegram.WebApp.setBackgroundColor("#05060f"))}catch(e){}
+var $=function(i){return document.getElementById(i)};
+function save(){try{localStorage.setItem("numapp2",JSON.stringify(S))}catch(e){}push()}
+function money(n){return Math.round(n).toLocaleString("ru-RU").replace(/\u00a0/g," ")+" ₽"}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function d(){return Math.floor(Math.random()*10)}
+function fmt(a){var s=a.join("");return "+7 "+s.slice(0,3)+" "+s.slice(3,6)+" "+s.slice(6,8)+" "+s.slice(8)}
+function pick(m){var w=MODES[m].w,t=0,r,a=0;w.forEach(function(x){t+=x});r=Math.random()*t;for(var i=0;i<w.length;i++){a+=w[i];if(r<a)return i}return 0}
+function gen(t){var a=[9];for(var i=0;i<9;i++)a.push(d());
+ if(t==0){while(/(\d)\1\1/.test(a.join(""))||/(\d)(\d)\1\2/.test(a.join(""))){a=[9];for(i=0;i<9;i++)a.push(d())}}
+ if(t==1){var x=d();a[7]=a[8]=a[9]=x}
+ if(t==2){var p=d(),q=(p+1+d()%9)%10;a[6]=a[8]=p;a[7]=a[9]=q}
+ if(t==9||t==10){a=(t==9?"7777777777":"0000000000").split("").map(Number)}
+ if(t>=3&&t<9){var k=t+1,z=[7,8,6,9,5][d()%5];for(i=10-k;i<10;i++)a[i]=z;if(10-k-1>0)a[10-k-1]=(z+1+d()%9)%10}
+ return a}
+function inc(sim,ph){return Math.round(sim.v*RATE*ph.m)}
+function phoneOf(id){return PHONES.filter(function(p){return p.id==id})[0]}
+function simOf(id){return S.nums.filter(function(n){return n.id==id})[0]}
+// выплаты каждый час
+function payouts(){var now=Date.now(),ch=false;
+ S.phones.forEach(function(p){if(!p.sim)return;var h=Math.floor((now-p.last)/HOUR);
+  if(h>0){var sim=simOf(p.sim);if(sim)S.bal+=h*inc(sim,phoneOf(p.type));p.last+=h*HOUR;ch=true}});
+ if(ch)save();return ch}
+function render(){
+ $("bal").textContent=money(S.bal);
+ var m=MODES[mult];
+ $("x").innerHTML=[1,5,10].map(function(k){var o=MODES[k];
+  return '<button data-m="'+k+'" class="'+(k==mult?"on":"")+'" style="background:'+o.g+'"><i>'+o.e+'</i>X'+k+'<small>'+o.n+'</small></button>'}).join("");
+ $("desc").innerHTML='<span style="color:'+m.c+'">'+m.t+'</span>';
+ $("go").style.background=m.g;$("go").textContent="🎰 Крутить за "+money(m.cost);$("go").disabled=busy||S.bal<m.cost;
+ var P=$("pend");if(pend&&!busy){P.style.display="flex";P.innerHTML='<button class="btn p" data-a="keep">💾 Сохранить</button>'+(pend.u?'':'<button class="btn" data-a="sell">💰 Продать '+money(pend.v)+'</button>')}else P.style.display="none";
+ $("hist").innerHTML=S.hist.length?S.hist.slice(0,6).map(function(h){return '<div class="c l"><span>'+h.num+'</span><span class="tag" style="color:'+h.c+'">'+h.n+'</span></div>'}).join(""):'<div class="em">Пока пусто</div>';
+ renderNums();renderPhones()}
+function renderNums(){
+ $("nl").innerHTML=S.nums.length?S.nums.slice().reverse().map(function(n){
+  var inPh=S.phones.some(function(p){return p.sim==n.id});
+  return '<div class="c"><div class="l"><b>'+n.num+'</b><span class="tag" style="color:'+n.c+'">'+n.n+'</span></div><div class="l" style="margin-top:8px"><small>Цена '+money(n.v)+'</small>'+
+  (inPh?'<small>📞 вставлен в телефон</small>':n.u?'<small>🔒 уникальный</small>':'<button class="btn" style="flex:none;padding:8px 14px" data-sell="'+n.id+'">Продать</button>')+'</div></div>'}).join(""):'<div class="em">Номеров нет. Выбей и нажми «Сохранить»</div>'}
+function renderPhones(){
+ $("my").innerHTML=S.phones.length?S.phones.map(function(p){var t=phoneOf(p.type),sim=p.sim&&simOf(p.sim),free=S.nums.filter(function(n){return !S.phones.some(function(q){return q.sim==n.id})});
+  var body;
+  if(sim){var left=HOUR-(Date.now()-p.last);var mm=Math.max(0,Math.floor(left/60000)),ss=Math.max(0,Math.floor(left/1000)%60);
+   body='<small>SIM: '+sim.num+'</small><div style="margin-top:6px;color:#2fb344;font-weight:700">+'+money(inc(sim,t))+' / час</div><small>Следующая выплата через '+mm+':'+(ss<10?"0":"")+ss+'</small><div class="row"><button class="btn" data-eject="'+p.id+'">Достать SIM</button></div>'}
+  else body='<small>SIM-карты нет</small>'+(free.length?'<select data-ins="'+p.id+'"><option value="">Вставить SIM-карту…</option>'+free.map(function(n){return '<option value="'+n.id+'">'+n.num+' · '+money(inc(n,t))+'/ч</option>'}).join("")+'</select>':'<div style="margin-top:6px"><small>Сохрани номер, чтобы вставить его</small></div>');
+  return '<div class="c"><div class="l"><b>'+t.e+' '+t.n+'</b><small>доход ×'+t.m+'</small></div>'+body+'</div>'}).join(""):'<div class="em">Телефонов нет — купи в магазине</div>';
+ $("shop").innerHTML=PHONES.map(function(t){return '<div class="c"><div class="l"><div><b>'+t.e+' '+t.n+'</b><br><small>Доход с номера ×'+t.m+' · '+(RATE*100*t.m)+'% стоимости номера в час</small></div><button class="btn p" style="flex:none" data-buy="'+t.id+'"'+(S.bal<t.p?" disabled":"")+'>'+money(t.p)+'</button></div></div>'}).join("")}
+function go(p){page=p;document.querySelectorAll(".pg").forEach(function(e){e.classList.toggle("on",e.id=="p-"+p)});
+ document.querySelectorAll("#dr button").forEach(function(b){b.classList.toggle("on",b.dataset.p==p)});menu(false);render()}
+function menu(on){$("dr").classList.toggle("on",on);$("ov").classList.toggle("on",on)}
+function sellPend(){if(!pend)return;if(pend.u)S.nums.push(pend);else S.bal+=pend.v;pend=null;save()}
+$("bur").onclick=function(){menu(true)};$("ov").onclick=function(){menu(false)};
+$("dr").onclick=function(e){var p=e.target.dataset.p;if(p)go(p)};
+$("x").onclick=function(e){var b=e.target.closest("button");if(!b||busy)return;mult=+b.dataset.m;render()};
+$("pend").onclick=function(e){var a=e.target.dataset.a;if(a=="keep"){S.nums.push(pend);pend=null;save()}if(a=="sell")sellPend();render()};
+$("nl").onclick=function(e){var id=e.target.dataset.sell;if(!id)return;var n=simOf(id);if(n.u)return;S.bal+=n.v;S.nums=S.nums.filter(function(x){return x.id!=id});save();render()};
+$("shop").onclick=function(e){var id=e.target.dataset.buy;if(!id)return;var t=phoneOf(id);if(S.bal<t.p)return;S.bal-=t.p;S.phones.push({id:uid(),type:id,sim:null,last:0});save();render()};
+$("my").onclick=function(e){var id=e.target.dataset.eject;if(!id)return;S.phones.forEach(function(p){if(p.id==id){p.sim=null}});save();render()};
+$("my").onchange=function(e){var id=e.target.dataset.ins;if(!id||!e.target.value)return;S.phones.forEach(function(p){if(p.id==id){p.sim=e.target.value;p.last=Date.now()}});save();render()};
+$("go").onclick=function(){var m=MODES[mult];if(busy||S.bal<m.cost)return;
+ sellPend();busy=true;S.bal-=m.cost;$("tier").textContent="";render();
+ var t0=pick(mult);(t0>=9?claimU(t0):Promise.resolve(true)).then(function(ok){run(ok?t0:8)});
+ function run(t){var fin=gen(t),cur=[9,"•","•","•","•","•","•","•","•","•"],i=1,T=TIERS[t];
+ function step(){
+  if(i>9){var v=T.v;pend={id:uid(),num:fmt(fin),v:v,n:T.n,c:T.c,u:t>=9?1:0};
+   $("tier").innerHTML='<span style="color:'+T.c+'">'+T.n+' · стоит '+money(v)+'</span>';
+   S.hist.unshift({num:fmt(fin),n:T.n,c:T.c});S.hist=S.hist.slice(0,20);busy=false;save();render();return}
+  var n=0,iv=setInterval(function(){cur[i]=d();$("num").firstChild.textContent=fmt(cur);
+   if(++n>=6){clearInterval(iv);cur[i]=fin[i];$("num").firstChild.textContent=fmt(cur);i++;setTimeout(step,60)}},45)}
+ step()}
+};
+$("reset").onclick=function(){S={bal:START,nums:[],phones:[],hist:[]};pend=null;save();$("tier").textContent="";$("num").firstChild.textContent="+7 9•• ••• •• ••";render()};
+var BONUS=500,BCD=600000,SRV=false,rev=0,ADM=false,pt=0,IDATA=(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData)||"";
+function api(m,u,b){return fetch(u,{method:m,headers:{"Content-Type":"application/json","X-Init-Data":IDATA},body:b?JSON.stringify(b):undefined}).then(function(r){if(r.status==409)throw "conflict";if(!r.ok)throw r.status;return r.json()})}
+function push(){if(!SRV)return;clearTimeout(pt);pt=setTimeout(function(){pt=0;api("PUT","/api/state",{state:S,rev:rev}).then(function(r){rev=r.rev}).catch(function(e){if(e=="conflict")pull()})},400)}
+function pull(){return api("GET","/api/state").then(function(r){if(r.state){S=r.state;rev=r.rev}else{S={bal:START,nums:[],phones:[],hist:[]};push()}render()})}
+function claimU(t){var key=t==9?"7777777777":"0000000000";
+ if(SRV)return api("POST","/api/claim",{num:key}).then(function(r){return r.ok}).catch(function(){return false});
+ S.uniq=S.uniq||{};if(S.uniq[key])return Promise.resolve(false);S.uniq[key]=1;return Promise.resolve(true)}
+function bonusTxt(){var b=$("bonus"),l=BCD-(Date.now()-(S.bonusAt||0));
+ if(l<=0){b.disabled=false;b.textContent="🎁 Бонус +"+money(BONUS)}else{b.disabled=true;var m=Math.floor(l/60000),c=Math.floor(l/1000)%60;b.textContent="🎁 Следующий бонус через "+m+":"+(c<10?"0":"")+c}}
+$("bonus").onclick=function(){if(Date.now()-(S.bonusAt||0)<BCD)return;S.bal+=BONUS;S.bonusAt=Date.now();save();render()};
+function amsg(t){$("a-msg").textContent=t}
+function loadUni(){api("GET","/api/admin/unique").then(function(u){$("a-uni").innerHTML=["7777777777","0000000000"].map(function(k){return '<div style="margin-top:6px"><small>'+fmt(k.split("")) +': '+(u[k]?"владелец ID "+u[k]:"свободен")+'</small></div>'}).join("")}).catch(function(){})}
+$("a-bal").onclick=function(){var to=$("a-to").value.trim(),amt=+$("a-amt").value;if(!amt)return;
+ api("POST","/api/admin/balance",{to:to,amount:amt}).then(function(){amsg("Баланс выдан ✅");if(!to)pull()}).catch(function(){amsg("Ошибка")})};
+$("a-giv").onclick=function(){var to=$("a-to").value.trim(),num=$("a-num").value.trim(),v=+$("a-val").value||0;if(!/^\d{10}$/.test(num)){amsg("Нужно 10 цифр");return}
+ api("POST","/api/admin/number",{to:to,num:num,value:v}).then(function(r){amsg(r.ok?"Номер выдан ✅":"Этот уникальный номер уже у другого");if(r.ok&&!to)pull();loadUni()}).catch(function(){amsg("Ошибка")})};
+var _go=go;go=function(p){if(p=="admin"&&!ADM)return;_go(p);if(p=="admin")loadUni()};
+if(IDATA)api("GET","/api/me").then(function(r){SRV=true;ADM=!!r.isAdmin;$("reset").style.display="none";$("adm").style.display=ADM?"block":"none";return pull()}).catch(function(){});
+payouts();render();bonusTxt();
+setInterval(function(){var c=payouts();if(c){$("bal").textContent=money(S.bal)}bonusTxt();if(SRV&&!busy&&!pt&&++tk%20==0)pull();if(page=="phones"&&!(document.activeElement&&document.activeElement.tagName=="SELECT"))renderPhones()},1000);
+</script><script>
+(function(){var c=document.getElementById("sky"),x=c.getContext("2d"),W,H,S=[],sh=null,rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+function init(){var r=devicePixelRatio||1;W=innerWidth;H=innerHeight;c.width=W*r;c.height=H*r;x.setTransform(r,0,0,r,0,0);S=[];
+ for(var i=0,n=Math.round(W*H/5000);i<n;i++)S.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+.2,p:Math.random()*6.28,s:Math.random()*.02+.005,h:[210,260,330,45][i%4]})}
+function draw(){x.clearRect(0,0,W,H);
+ S.forEach(function(s){s.p+=s.s;x.fillStyle="hsla("+s.h+",80%,88%,"+(.45+.5*Math.sin(s.p))+")";x.beginPath();x.arc(s.x,s.y,s.r,0,6.28);x.fill()});
+ if(!rm){if(!sh&&Math.random()<.003)sh={x:Math.random()*W*.7,y:Math.random()*H*.4,t:0};
+  if(sh){sh.t++;var hx=sh.x+sh.t*7,hy=sh.y+sh.t*3.5,g=x.createLinearGradient(hx,hy,hx-50,hy-25);g.addColorStop(0,"rgba(255,255,255,.9)");g.addColorStop(1,"rgba(255,255,255,0)");
+   x.strokeStyle=g;x.lineWidth=1.5;x.beginPath();x.moveTo(hx,hy);x.lineTo(hx-50,hy-25);x.stroke();if(sh.t>55)sh=null}
+  requestAnimationFrame(draw)}}
+init();draw();addEventListener("resize",function(){init();if(rm)draw()})})();
+</script></body></html>
